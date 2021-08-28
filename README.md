@@ -1,34 +1,44 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
+## Casos de uso do memo
+```tsx
+export const ProductItem = memo(
+  ProductItemComponent,
+  (prevProps, nextProps) => {
+    return Object.is(prevProps.product, nextProps.product);
+  }
+);
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Componente puro (isolar componentes).
+2. Componentes que renderizam muitas vezes(top often).
+3. Componentes que fazem re-renderizam com as mesmas propriedades.
+4. Quando o componente esta num tamanho médio para grande.
+   - Nao fazer otimizações prematuras
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Use Memo 
+Serve para evitar operações dentro do componente em que o resultado não altera. Por exemplo calculo do preço total dentro de um carrinho.
+```tsx
+const totalPrice = useMemo(() => {
+    return results.reduce((total, product) => {
+      return total + product.price;
+    }, 0);
+  }, [results]);
+```
+### Casos de uso do UseMemo
+1. Cálculos pesados
+2. Igualdade referencial (quando um componente usa uma informação)
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Use Callback 
+Serve para memorizar uma função
+### Casos de uso do Callback
+Igualdade referencial 
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+A formatação deve ser feita no momento da chamada api e não dentro do componente, isso evita que usemos o useMemo pois os dados serão  formatados uma única vez
 
-## Learn More
+code split de funções com lazy loading no nextjs exemplo
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```tsx
+async function showFormattedDate(){
+   const {format} = await import('date-fns')
+   format()
+}
+```
