@@ -1,3 +1,5 @@
+## Aplicação para aprender técnicas de  de performance dos aplicativos no Reactjs
+
 ## Casos de uso do memo
 ```tsx
 export const ProductItem = memo(
